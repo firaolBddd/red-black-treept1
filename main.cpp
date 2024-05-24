@@ -238,4 +238,111 @@ void fileInsert(Node*& root) { //Insert nodes from a file
         }
     }
 }
+void balanceTree(Node*& root, Node*& current) { //Maintain Red-Black Tree properties after insertion
+    Node* parent = NULL;
+    Node* grandParent = NULL;
+    while ((current != root) && (current->getColor() != 0) && ((current->getParent())->getColor() == 1)) {
+        parent = current->getParent();
+        grandParent = parent->getParent();
+        //Case A: Parent is the left child of grandparent
+        if (parent == grandParent->getLeft()) {
+            Node* uncle = grandParent->getRight();
+            //Case 1A: Uncle is red, only recolor
+            if (uncle != NULL && uncle->getColor() != 0) {
+                grandParent->setColor(1); //Red
+                parent->setColor(0); //Black
+                uncle->setColor(0); //Black
+                current = grandParent;
+            }
+            else {
+                //Case 2A: Current is the right child of parent, rotate left
+                if (current == parent->getRight()) {
+                    rotateLeft(root, parent);
+                    current = parent;
+                    parent = current->getParent();
+                }
+                //Case 3A: Current is the left child of parent, rotate right
+                rotateRight(root, grandParent);
+                //Swap colors of parent and grandparent
+                int tempColor = parent->getColor();
+                parent->setColor(grandParent->getColor());
+                grandParent->setColor(tempColor);
+                current = parent;
+            }
+        }
+        //Case B: Parent is the right child of grandparent
+        else {
+            Node* uncle = grandParent->getLeft();
+            //Case 1B: Uncle is red, only recolor
+            if (uncle != NULL && uncle->getColor() != 0) {
+                grandParent->setColor(1); //Red
+                parent->setColor(0); //Black
+                uncle->setColor(0); //Black
+                current = grandParent;
+            }
+            else {
+                //Case 2B: Current is the left child of parent, rotate right
+                if (current == parent->getLeft()) {
+                    rotateRight(root, parent);
+                    current = parent;
+                    parent = current->getParent();
+                }
+                //Case 3B: Current is the right child of parent, rotate left
+                rotateLeft(root, grandParent);
+                //Swap colors of parent and grandparent
+                int tempColor = parent->getColor();
+                parent->setColor(grandParent->getColor());
+                grandParent->setColor(tempColor);
+                current = parent;
+            }
+        }
+    }
+    root->setColor(0); //Root is black
+}
+
+
+
+void rotateLeft(Node*& root, Node*& current) { //Rotate left
+    Node* rightChild = current->getRight();
+    //Perform rotation
+    current->setRight(rightChild->getLeft());
+    if (current->getRight() != NULL) {
+        (current->getRight())->setParent(current);
+    }
+    rightChild->setParent(current->getParent());
+    //If current node is root
+    if (current->getParent() == NULL) {
+        root = rightChild;
+    }
+    else if (current == (current->getParent())->getLeft()) {
+        (current->getParent())->setLeft(rightChild);
+    }
+    else {
+        (current->getParent())->setRight(rightChild);
+    }
+    rightChild->setLeft(current);
+    current->setParent(rightChild);
+}
+
+void rotateRight(Node*& root, Node*& current) { //Rotate right
+    Node* leftChild = current->getLeft();
+    //Perform rotation
+    current->setLeft(leftChild->getRight());
+    if (current->getLeft() != NULL) {
+        (current->getLeft())->setParent(current);
+    }
+    leftChild->setParent(current->getParent());
+    //If current node is root
+    if (current->getParent() == NULL) {
+        root = leftChild;
+    }
+    else if (current == (current->getParent())->getLeft()) {
+        (current->getParent())->setLeft(leftChild);
+    }
+    else {
+        (current->getParent())->setRight(leftChild);
+    }
+    leftChild->setRight(current);
+    current->setParent(leftChild);
+}
 
