@@ -124,4 +124,71 @@ void insertNode(Node*& root, Node*& current, Node*& parent, int value) { //Inser
         }
     }
 }
+void printTree(Node* root, Branch* previous, bool isLeft) { //Print the tree
+    if (root == NULL) {
+        return;
+    }
+    char* prevStr = (char*)("    ");
+    Branch* branch = new Branch(previous, prevStr);
+    printTree(root->getLeft(), branch, true);
+    //Formatting tree
+    if (!previous) {
+        branch->str = (char*)("---");
+    }
+    else if (isLeft) {
+        branch->str = (char*)(".---");
+        prevStr = (char*)("   |");
+    }
+    else {
+        branch->str = (char*)("'---");
+        previous->str = prevStr;
+    }
+    showBranches(branch);
+    if (root->getColor() == 0) { //if Black
+        cout << BLUE << root->getData() << RESET << endl;
+    }
+    else { //Red
+        cout << RED << root->getData() << RESET << endl;
+    }
+    if (previous) {
+        previous->str = prevStr;
+    }
+    branch->str = (char*)("   |");
+    printTree(root->getRight(), branch, false);
+}
+
+void parseInput(char* input, int* values, int& count) { //Parse input string into integer values
+    int x = 0;  //keeps track of # of chars before space
+    for (int i = 0; i < strlen(input); i++) {
+        if (input[i] == ' ') {
+            if (x == 1) {
+                int temp = 0;
+                temp = input[i - 1] - '0';
+                values[count] = temp;
+                count++;
+                x = 0;
+            }
+            else {
+                int temp = 0;
+                for (int a = 0; a < x; a++) {
+                    temp = 10 * temp + (input[i - x + a] - '0');
+                }
+                values[count] = temp;
+                count++;
+                x = 0;
+            }
+        }
+        else {
+            int temp = 0;
+            x++;
+            if (i == strlen(input) - 1) {  //last possible pair of chars
+                for (int a = 0; a < x; a++) {
+                    temp = 10 * temp + (input[i + a + 1 - x] - '0');
+                }
+                values[count] = temp;
+                count++;
+            }
+        }
+    }
+}
 
