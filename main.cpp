@@ -1,3 +1,11 @@
+//Firaol Berehanu
+//
+//Red Black Tree - mde for inserting nodes into a tree with color cordiantion
+/* I used  the follwiong for help:
+                             https://www.geeksforgeeks.org/red-black-tree-set-2-insert/
+                        https://en.wikipedia.org/wiki/Tree_rotation
+I also got help from my uncle for traversting the tree
+*/
 #include <iostream>
 #include <cstring>
 #include <fstream>
@@ -188,6 +196,45 @@ void parseInput(char* input, int* values, int& count) { //Parse input string int
                 values[count] = temp;
                 count++;
             }
+        }
+    }
+}
+void fileInsert(Node*& root) { //Insert nodes from a file
+    char input[10000];
+    char fileName[100];
+    int values[100];
+    int valueCount = 0;
+    int count = 0;
+    memset(input, 0, 10000);
+    memset(fileName, 0, 100);
+    memset(values, 0, 100);
+
+    cout << endl << "Enter the file name: ";
+    cin.get(fileName, 30);
+    cin.clear();
+    cin.ignore(100000, '\n');
+    streampos size;
+    ifstream file(fileName, ios::in | ios::binary | ios::ate);
+    if (file.is_open()) {
+        size = file.tellg();
+        file.seekg(0, ios::beg);
+        file.read(input, size);
+        file.close();
+        parseInput(input, values, count); //Parse input into values array
+        cout << "Input: ";
+        for (int i = 0; i < 100; i++) {
+            if (values[i] != 0) {
+                cout << values[i] << " ";
+                valueCount++;
+            }
+        }
+        cout << endl << "Count: " << valueCount << endl;
+        Node* current = NULL;
+        Node* parent = NULL;
+        for (int i = 0; i < valueCount; i++) {
+            if (values[i] == 0) break;
+            current = root;
+            insertNode(root, current, parent, values[i]);
         }
     }
 }
